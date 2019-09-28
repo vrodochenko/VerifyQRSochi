@@ -138,9 +138,9 @@ while True:
             if encoded_msg:
                 msg = json.loads(encoded_msg)
                 if msg.__contains__(ApiKeys.Sender):  # входящее сообщение от пользователя
-                    echo_msg = create_text_message(auth_token, msg[ApiKeys.Text], msg[ApiKeys.Sender], OPAQUE)
+                    echo_msg = create_text_message(auth_token, "чё?" , msg[ApiKeys.Sender], OPAQUE)
+                   # msg[ApiKeys.Text]
                     print(echo_msg)
-                    sock.sendall(bytes(echo_msg, 'utf-8'))
                     sock.sendall(bytes(echo_msg, 'utf-8'))
                     OPAQUE += 1
                     echo_image = create_image_message(auth_token, msg[ApiKeys.Sender], OPAQUE, pic,

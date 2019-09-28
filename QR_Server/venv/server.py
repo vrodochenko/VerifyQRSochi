@@ -4,6 +4,9 @@ from qrgen import *
 from rsh import *
 import json
 
+from QR_Server.venv.qrgen import genqr
+from QR_Server.venv.rsh import request_exception_handler
+
 app = Flask(__name__)
 
 
@@ -16,13 +19,8 @@ def index():
 @request_exception_handler
 def parse_request():
     req_data = request.get_json()
-    print(str(req_data))
-    genqr("ФИО: " + req_data["FIO"] + "\n" +
-          "Дата рождения: " + req_data["Day_of_birth"] + "\n" +
-          "Серия и номер паспорта: " + req_data["Ser_num"] + "\n" +
-          "Начало тура: " + req_data["Start_of_tour"] + "\n" +
-          "Окончание тура: " + req_data["Finish_of_tour"] + "\n")
-
+    genqr(json.dumps(req_data))
+    return "test"
     # TODO:
 
 
