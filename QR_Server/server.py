@@ -1,4 +1,3 @@
-import io
 from flask import Flask, request, jsonify, send_file
 from qrgen import *
 from rsh import *
