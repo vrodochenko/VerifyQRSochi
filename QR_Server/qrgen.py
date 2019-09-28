@@ -1,5 +1,6 @@
 import qrcode
 
+
 def genqr(FIO):
     qr = qrcode.QRCode(
         version=1,

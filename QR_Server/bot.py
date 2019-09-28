@@ -2,110 +2,18 @@ import socket
 import json
 import time
 from os.path import dirname, realpath
+from ApiKeys import *
+from ApiResult import ApiResult
+from ChatBot import ChatBot
+from MessageGenerator import MessageGenerator
+from ImageFormat import ImageFormat
+
 from base64 import b64encode
 from sys import argv, exit
 
 PIC_PATH = dirname(realpath(__file__)) + "/FIO.png"
 PIC_THUMB_PATH = dirname(realpath(__file__)) + "/FIO.png"
-
-class ApiKeys:
-    MimeType = "mimetype"  # тип сообщения
-    Receiver = "receiver"  # получатель
-    Text = "text"  # текст
-    OpaqueData = "opaque"  # идентификатор запроса
-    ReceiverEncoding = "receiverencoding"  # кодирование получателя сообщения
-    Image = "image"  # изображение
-    ImageThumbnail = "imagethumbnail"  # миниатюра  изображения
-    ImageFormat = "imageformat"  # формат изображения
-    Sender = "sender"  # отправитель
-    Result = "result"  # результат выполнения
-    Auth = "auth"  # аутентификация
-    Subscribe = "subscribe"  # подписка на информацию
-
-
-# Результаты выполнения запроса к сервису работы с сообщениями
-class ApiResult:
-    Ok = 0  # Запрос выполнен успешно
-    JsonFieldMissing = 100  # Не переданы все обязательные поля
-    ParsePacketError = 101  # Некорректный пакет
-    JsonSyntaxError = 102  # Ошибка парсинга. Не хватает закрывающей скобки или запятой
-    SenderNotReady = 103  # Сервис отправки сообщений не может обработать сообщение в данный момент
-    FileNotExist = 104  # Файл с контентом не существует. Возможно не было передано изображение
-    BadReceiver = 105  # Некорректный получатель сообщения
-    Timeout = 106  # Сервер не дождался всех фрагментов команды
-    Unauthorized = 107  # Не совпал token аутентификации
-
-
-# Форматы изображений
-class ImageFormat:
-    Jpg = "jpg"
-    Png = "png"
-
-
-# Типы сообщений
-class MimeTypes:
-    Text = "com.seraphim.textmessage"  # Текстовое
-    Image = "com.seraphim.imagemessage"  # Изображение
-
-
-# Варианты кодирования получателя сообщения
-class ReceiverEncodings:
-    Hash = "hash"  # В виде sha-256 хэш-суммы
-
 OPAQUE = 0
-
-def create_text_message(auth_token, text, receiver, opaque):
-    ''' Создание текстового сообщения
-    :param auth_token: токен аутентификации бота
-    :param text: Текст сообщения
-    :param receiver: sha-256 хэш-сумма логина получателя
-    :param opaque: идентификатор запроса к API. Число
-    :return: json команды
-    '''
-
-    return json.dumps(
-        {ApiKeys.Text: text,
-         ApiKeys.MimeType: MimeTypes.Text,
-         ApiKeys.Receiver: receiver,
-         ApiKeys.OpaqueData: opaque,
-         ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
-         ApiKeys.Auth: auth_token}, separators=(',', ':'))
-
-
-def create_image_message(auth_token, receiver, opaque, image, image_thumbnail, image_format):
-    ''' Создание сообщения с изображением
-    :param auth_token: токен аутентификации бота
-    :param receiver: sha-256 хэш-сумма логина получателя
-    :param opaque: идентификатор запроса к API. Число
-    :param image: изображение, закодированное в base64
-    :param image_thumbnail: миниатюра изображения, закодированная в base64
-    :param image_format: формат изображения
-    :return: json команды
-    '''
-
-    return json.dumps(
-        {ApiKeys.MimeType: MimeTypes.Image,
-         ApiKeys.Receiver: receiver,
-         ApiKeys.OpaqueData: opaque,
-         ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
-         ApiKeys.Image: b64encode(image).decode(),
-         ApiKeys.ImageThumbnail: b64encode(image_thumbnail).decode(),
-         ApiKeys.ImageFormat: image_format,
-         ApiKeys.Auth: auth_token}, separators=(',', ':'))
-
-def subscribe_to_messages(auth_token, opaque):
-    ''' Подписка на сообщение от пользователя
-    :param auth_token: токен аутентификации бота
-    :param opaque:
-    :return: json команды
-    '''
-    return json.dumps(
-        {
-            ApiKeys.Subscribe: True,
-            ApiKeys.Auth: auth_token,
-            ApiKeys.OpaqueData: opaque
-        }
-    )
 
 ip_addr = 'api.seraphim.online'
 port = 20001
@@ -113,8 +21,8 @@ auth_token = 'b18abcd5af40ae5dec47bdff580475f2bd5f96356896cf2965fbd281ea27448b'
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print(sock)
 sock.connect((ip_addr, port))
-msg = subscribe_to_messages(auth_token, OPAQUE)
-print (msg)
+msg = ChatBot.subscribe_to_messages(auth_token, OPAQUE)
+print(msg)
 sock.sendall(bytes(msg, 'utf-8'))
 OPAQUE += 1
 pic = None
@@ -138,13 +46,13 @@ while True:
             if encoded_msg:
                 msg = json.loads(encoded_msg)
                 if msg.__contains__(ApiKeys.Sender):  # входящее сообщение от пользователя
-                    echo_msg = create_text_message(auth_token, "чё?" , msg[ApiKeys.Sender], OPAQUE)
-                   # msg[ApiKeys.Text]
+                    echo_msg = MessageGenerator.create_text_message(auth_token, "чё?", msg[ApiKeys.Sender], OPAQUE)
+                    # msg[ApiKeys.Text]
                     print(echo_msg)
                     sock.sendall(bytes(echo_msg, 'utf-8'))
                     OPAQUE += 1
-                    echo_image = create_image_message(auth_token, msg[ApiKeys.Sender], OPAQUE, pic,
-                                                pic_thumb, ImageFormat.Jpg)
+                    echo_image = MessageGenerator.create_image_message(auth_token, msg[ApiKeys.Sender], OPAQUE, pic,
+                                                      pic_thumb, ImageFormat.Jpg)
                     print(echo_image)
                     OPAQUE += 1
                     sock.sendall(bytes(echo_image, 'utf-8'))
@@ -153,8 +61,3 @@ while True:
                         print("error :", msg[ApiKeys.Result])
 
     time.sleep(1)
-
-
-
-
-

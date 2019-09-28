@@ -40,5 +40,5 @@ def generate():
     return "testqr"
 
 
-if __name__ == "__main__":
-    app.run(host = "10.178.195.95", port=5000)
+def start_server():
+    app.run(host="10.178.195.95", port=5000)
