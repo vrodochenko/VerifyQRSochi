@@ -23,7 +23,7 @@ class MessageGenerator:
             {ApiKeys.Text: text,
              ApiKeys.MimeType: MimeTypes.Text,
              ApiKeys.Receiver: receiver,
-             ApiKeys.OpaqueData: opaque,
+             ApiKeys.RequestID: opaque,
              ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
              ApiKeys.Auth: auth_token}, separators=(',', ':'))
 
@@ -43,7 +43,7 @@ class MessageGenerator:
         return json.dumps(
             {ApiKeys.MimeType: MimeTypes.Image,
              ApiKeys.Receiver: receiver,
-             ApiKeys.OpaqueData: opaque,
+             ApiKeys.RequestID: opaque,
              ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
              ApiKeys.Image: b64encode(image).decode(),
              ApiKeys.ImageThumbnail: b64encode(image_thumbnail).decode(),
