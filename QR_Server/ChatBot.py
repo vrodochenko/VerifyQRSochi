@@ -10,8 +10,12 @@ from configs import *
 
 from ApiKeys import *
 from ApiResult import ApiResult
+
+from SeraphimMessage import SeraphimMessage as SM
 from SeraphimMessageGenerator import SeraphimMessageGenerator
 from ImageFormat import ImageFormat
+from MessageHandler import MessageHandler
+from SeraphimMessageGenerator import SeraphimMessageGenerator
 
 
 class ChatBot:
@@ -25,6 +29,9 @@ class ChatBot:
 
         self.pic = None
         self.pic_thumb = None
+
+        self.MH = MessageHandler()
+        self.SMG = SeraphimMessageGenerator()
 
     def subscribe_to_messages(self):
         ''' Подписка на сообщение от пользователя
@@ -58,22 +65,28 @@ class ChatBot:
     def handle_message(self, encoded_msg):
         if encoded_msg:
             msg = json.loads(encoded_msg)
+            new_msg = SM(msg)
+            if new_msg.type == "text":
+                pass
+            elif new_msg.type == "server_message":
+                pass
+
             if msg.__contains__(ApiKeys.Sender):
-                echo_msg = SeraphimMessageGenerator.create_text_message(auth_token=auth_token,
-                                                                        text=msg[ApiKeys.Text],
-                                                                        receiver=msg[ApiKeys.Sender],
-                                                                        message_number_in_queue=self.request_id)
+                echo_msg = self.SMG.create_text_message(auth_token=auth_token,
+                                                        text=msg[ApiKeys.Text],
+                                                        receiver=msg[ApiKeys.Sender],
+                                                        message_number_in_queue=self.request_id)
                 # msg[ApiKeys.Text]
                 #print(echo_msg)
                 self.socket_to_connect.sendall(bytes(echo_msg, 'utf-8'))
                 self.request_id += 1
                 self.get_pics()
-                echo_image = SeraphimMessageGenerator.create_image_message(auth_token=auth_token,
-                                                                           receiver=msg[ApiKeys.Sender],
-                                                                           message_number_in_queue=self.request_id,
-                                                                           image=self.pic,
-                                                                           image_thumbnail=self.pic_thumb,
-                                                                           image_format=ImageFormat.Jpg)
+                echo_image = self.SMG.create_image_message(auth_token=auth_token,
+                                                           receiver=msg[ApiKeys.Sender],
+                                                           message_number_in_queue=self.request_id,
+                                                           image=self.pic,
+                                                           image_thumbnail=self.pic_thumb,
+                                                           image_format=ImageFormat.Jpg)
                 #print(echo_image)
                 self.request_id += 1
                 self.socket_to_connect.sendall(bytes(echo_image, 'utf-8'))
