@@ -8,6 +8,6 @@ def subscribe(): #Subscribe on Serafime
     sock.send(grt.encode())
 
     data = sock.recv(1024)
-    sock.close()
     print (data)
     return(data)
+subscribe()

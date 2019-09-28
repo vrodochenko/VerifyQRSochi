@@ -1,7 +1,7 @@
 import socket
 import json
 sock = socket.socket()
-sock.bind(('127.0.0.1', 9000))
+sock.bind(('127.0.0.1', 2001))
 sock.listen(1)
 conn, addr = sock.accept()
 while True:
@@ -9,9 +9,9 @@ while True:
     if not data:
         break
     if data.decode()=="Привет":
-        conn.send("Salam vualeykum. Che biletu zahotel? Lan u menya norm nastroy. Pishu svoi dannue, pes".encode())
+        conn.send("Здравствуйте. Для дальнейшей покупки введите Ваши ФИО полностью ".encode())
     else:
-        conn.send("Ne po sezonu shelestish".encode())
+        conn.send("Повторите без ошибок".encode())
 conn.close()
         
 
