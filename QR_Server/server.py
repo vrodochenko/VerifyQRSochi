@@ -4,8 +4,8 @@ from qrgen import *
 from rsh import *
 import json
 
-from QR_Server.venv.qrgen import genqr
-from QR_Server.venv.rsh import request_exception_handler
+from qrgen import genqr
+from rsh import request_exception_handler
 
 app = Flask(__name__)
 
