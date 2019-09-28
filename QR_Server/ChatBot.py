@@ -10,7 +10,6 @@ from configs import *
 
 from ApiKeys import *
 from ApiResult import ApiResult
-from ChatBot import ChatBot
 from MessageGenerator import MessageGenerator
 from ImageFormat import ImageFormat
 
@@ -48,9 +47,13 @@ class ChatBot:
         self.pic = None
         self.pic_thumb = None
         with open(self.PIC_PATH, "rb") as f_pic:
-            self.my_pic = f_pic.read()
+            self.pic = f_pic.read()
             with open(self.PIC_THUMB_PATH, "rb") as f_pic_thumb:
                 self.pic_thumb = f_pic_thumb.read()
+        if not self.pic:
+            print("Cannot import picture")
+        if not self.pic:
+            print("Cannot import thumbnail")
 
     def handle_message(self, encoded_msg):
         if encoded_msg:
@@ -63,7 +66,7 @@ class ChatBot:
                 print(echo_msg)
                 self.socket_to_connect.sendall(bytes(echo_msg, 'utf-8'))
                 self.message_number_in_queue += 1
-                self.get_pics(self)
+                self.get_pics()
                 echo_image = MessageGenerator.create_image_message(auth_token,
                                                                    msg[ApiKeys.Sender],
                                                                    self.message_number_in_queue,
@@ -85,6 +88,7 @@ class ChatBot:
             data_received = self.socket_to_connect.recv(1024)
 
             if data_received:
+                print(data_received)
                 messages = data_received.split(b"\n")  # we may have more then 1 in the queue, so we split them first
                 for encoded_msg in messages:
                     self.handle_message(encoded_msg)
