@@ -4,7 +4,7 @@ def genqr(FIO):
     qr = qrcode.QRCode(
         version=1,
         box_size=15,
-        border=5
+        border=1
     )
     data = FIO
     qr.add_data(data)
