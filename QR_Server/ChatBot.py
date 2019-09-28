@@ -10,7 +10,7 @@ from configs import *
 
 from ApiKeys import *
 from ApiResult import ApiResult
-from MessageGenerator import MessageGenerator
+from SeraphimMessageGenerator import SeraphimMessageGenerator
 from ImageFormat import ImageFormat
 
 
@@ -18,7 +18,7 @@ class ChatBot:
     def __init__(self):
         self.auth_token = configs.auth_token
         # self.request_id = request_id
-        self.message_number_in_queue = 0
+        self.request_id = 0
         self.socket_to_connect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.PIC_PATH = configs.PIC_PATH
         self.PIC_THUMB_PATH = configs.PIC_THUMB_PATH
@@ -35,10 +35,10 @@ class ChatBot:
         msg = json.dumps({
                 ApiKeys.Subscribe: True,
                 ApiKeys.Auth: self.auth_token,
-                ApiKeys.RequestID: self.message_number_in_queue
+                ApiKeys.RequestID: self.request_id
             })
         self.socket_to_connect.sendall(bytes(msg, 'utf-8'))
-        self.message_number_in_queue += 1
+        self.request_id += 1
 
     def connect(self):
         self.socket_to_connect.connect((ip_addr, port))
@@ -59,27 +59,29 @@ class ChatBot:
         if encoded_msg:
             msg = json.loads(encoded_msg)
             if msg.__contains__(ApiKeys.Sender):
-                echo_msg = MessageGenerator.create_text_message(auth_token=auth_token,
-                                                                text=msg[ApiKeys.Text],
-                                                                receiver=msg[ApiKeys.Sender],
-                                                                message_number_in_queue=self.message_number_in_queue)
+                echo_msg = SeraphimMessageGenerator.create_text_message(auth_token=auth_token,
+                                                                        text=msg[ApiKeys.Text],
+                                                                        receiver=msg[ApiKeys.Sender],
+                                                                        message_number_in_queue=self.request_id)
                 # msg[ApiKeys.Text]
                 #print(echo_msg)
                 self.socket_to_connect.sendall(bytes(echo_msg, 'utf-8'))
-                self.message_number_in_queue += 1
+                self.request_id += 1
                 self.get_pics()
-                echo_image = MessageGenerator.create_image_message(auth_token=auth_token,
-                                                                   receiver=msg[ApiKeys.Sender],
-                                                                   message_number_in_queue=self.message_number_in_queue,
-                                                                   image=self.pic,
-                                                                   image_thumbnail=self.pic_thumb,
-                                                                   image_format=ImageFormat.Jpg)
+                echo_image = SeraphimMessageGenerator.create_image_message(auth_token=auth_token,
+                                                                           receiver=msg[ApiKeys.Sender],
+                                                                           message_number_in_queue=self.request_id,
+                                                                           image=self.pic,
+                                                                           image_thumbnail=self.pic_thumb,
+                                                                           image_format=ImageFormat.Jpg)
                 #print(echo_image)
-                self.message_number_in_queue += 1
+                self.request_id += 1
                 self.socket_to_connect.sendall(bytes(echo_image, 'utf-8'))
             elif msg.__contains__(ApiKeys.RequestID):  # результат выполнения запроса
                 if int(msg[ApiKeys.Result]) != ApiResult.Ok:  # здесь можно обработать ошибки
                     print("error :", msg[ApiKeys.Result])
+            if msg.__contains__(ApiKeys.Text):
+                print("Нам пришло текстовое сообщение: {}".format(msg[ApiKeys.Text]))
 
     def start(self):
         self.connect()
@@ -94,9 +96,8 @@ class ChatBot:
             data_received = self.socket_to_connect.recv(1024)
 
             if data_received:
-                print(data_received)
                 messages = data_received.split(b"\n")  # we may have more then 1 in the queue, so we split them first
+                print("We received {}".format(data_received))
                 for encoded_msg in messages:
                     self.handle_message(encoded_msg)
-
             time.sleep(1)

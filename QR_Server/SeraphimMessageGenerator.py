@@ -6,7 +6,7 @@ from base64 import b64encode
 from ReceiverEncodings import ReceiverEncodings
 
 
-class MessageGenerator:
+class SeraphimMessageGenerator:
 
     @staticmethod
     def create_text_message(auth_token, text, receiver, message_number_in_queue):
