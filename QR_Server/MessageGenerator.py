@@ -9,7 +9,7 @@ from ReceiverEncodings import ReceiverEncodings
 class MessageGenerator:
 
     @staticmethod
-    def create_text_message(auth_token, text, receiver, opaque):
+    def create_text_message(auth_token, text, receiver, message_number_in_queue):
         '''
         Создание текстового сообщения
         :param auth_token: токен аутентификации бота
@@ -23,12 +23,12 @@ class MessageGenerator:
             {ApiKeys.Text: text,
              ApiKeys.MimeType: MimeTypes.Text,
              ApiKeys.Receiver: receiver,
-             ApiKeys.OpaqueData: opaque,
+             ApiKeys.RequestID: message_number_in_queue,
              ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
              ApiKeys.Auth: auth_token}, separators=(',', ':'))
 
     @staticmethod
-    def create_image_message(auth_token, receiver, opaque, image, image_thumbnail, image_format):
+    def create_image_message(auth_token, receiver, message_number_in_queue, image, image_thumbnail, image_format):
         '''
         Создание сообщения с изображением
         :param auth_token: токен аутентификации бота
@@ -39,11 +39,10 @@ class MessageGenerator:
         :param image_format: формат изображения
         :return: json команды
         '''
-
         return json.dumps(
             {ApiKeys.MimeType: MimeTypes.Image,
              ApiKeys.Receiver: receiver,
-             ApiKeys.OpaqueData: opaque,
+             ApiKeys.RequestID: message_number_in_queue,
              ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
              ApiKeys.Image: b64encode(image).decode(),
              ApiKeys.ImageThumbnail: b64encode(image_thumbnail).decode(),
