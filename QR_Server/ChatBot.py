@@ -11,6 +11,7 @@ from SeraphimMessageGenerator import SeraphimMessageGenerator
 from configs import *
 from DialogieHandler import DialogueHandler
 
+
 class ChatBot:
     def __init__(self):
         self.auth_token = configs.auth_token

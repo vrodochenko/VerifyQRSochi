@@ -17,5 +17,7 @@ DialogueMappings = \
         "купить": "start_selling",
         "почём билеты": "show_price",
         "почем билеты": "show_price",
-        "цена": "show_price"
+        "цена": "show_price",
+        "пока": "say_bye",
+        "счастливо": "say_bye"
     }

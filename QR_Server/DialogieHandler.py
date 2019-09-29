@@ -73,9 +73,11 @@ class DialogueHandler:
         return DR.answ_ask_for_payment
 
     def say_bye(self):
-        return DR.answ_farewell
+        self.state = DialogueStates.Idle
+        return DR.answ_bye
 
-    def say_bye(self):
+    def finish_procedures(self):
+        self.state = DialogueStates.Idle
         return DR.answ_farewell
 
     def save(self):
