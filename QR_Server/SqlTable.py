@@ -29,3 +29,16 @@ class SqlTable:
         else:
             return False
         con.close()
+
+    def ban(self, pes_hash):
+
+        try:
+            if self.read_from(pes_hash) == False:
+                print(pes_hash)
+                self.upload(pes_hash)
+            else:
+                pass
+            return 0
+        except:
+            print("Не могу добавить в базу данных")
+            return 1
