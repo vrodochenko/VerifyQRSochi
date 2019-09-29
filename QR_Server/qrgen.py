@@ -10,6 +10,8 @@ def genqr(FIO):
     data = FIO
     qr.add_data(data)
     qr.make(fit=True)
-    img = qr.make_image(fill='black', back_color='white')
+    img = qr.make_image(fill='black', back_color='white')   
+    size = (512, 512)
+    img.thumbnail(size)
     img.save('FIO.png')
     return img

@@ -5,3 +5,8 @@ fio = {"FIO": "Мамедов Игнат Эмильевич", "Day_of_birth": "2
 res = requests.post('http://10.178.195.95:5000/value', json=fio)
 if res.ok:
     print(res)
+
+fio = {['sdfsfsdfdsffffffffffffffffffffffff', 'sdaaaaaaaaaaaaaaaaa', 'asddddddddddddddddddd']}
+res = requests.post('http://10.178.195.95:5000/updatebl', json=fio)
+if res.ok:
+    print(res)

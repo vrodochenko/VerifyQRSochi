@@ -29,11 +29,10 @@ class SqlTable:
         else:
             return False
         con.close()
-
     def ban(self, pes_hash):
-
+        
         try:
-            if self.read_from(pes_hash) == False:
+            if self.read_from(pes_hash)==False:
                 print(pes_hash)
                 self.upload(pes_hash)
             else:
@@ -41,3 +40,15 @@ class SqlTable:
             return 0
         except:
             return 1
+        
+data = {'key': ['044089230afd05b3164a9d68e16eeb46', '044089230afd05b3164a9d68e16eeb46']}
+a = SqlTable()
+for h in data['key']:
+    print(h)
+    a.ban(h)
+    
+cur = con.cursor()
+cur.execute("SELECT * FROM users")
+print(cur.fetchall())
+
+
