@@ -82,6 +82,12 @@ class DialogueHandler:
         elif self.State == DialogueStates.GettingEndDate: #and len(input_str.split(".")) == 3:
             self.Pers.finish_of_tour = input_str
             self.State = DialogueStates.Finish
+        elif self.State == DialogueStates.GettingEndDate: #and len(input_str.split(".")) == 3:
+            self.Pers.finish_of_tour = input_str
+            self.State = DialogueStates.Finish
+        elif self.State == DialogueStates.Finish:
+            self.State = DialogueStates.Idle
+
 
     def confuse(self):
         if self.State != DialogueStates.Idle:

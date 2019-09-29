@@ -1,6 +1,7 @@
 import qrcode
 from configs import *
 
+
 def generate_qr_code(FIO):
     qr = qrcode.QRCode(
         version=1,
@@ -22,7 +23,7 @@ def generate_qr_code_iphone(iphone_json):
         box_size=15,
         border=1
     )
-    data = FIO
+    data = iphone_json
     qr.add_data(data)
     qr.make(fit=True)
     img = qr.make_image(fill='black', back_color='white')

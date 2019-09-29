@@ -87,8 +87,8 @@ class ChatBot:
                 self.react_on_dialogue_state()
                 print("Responding: {}".format(text_in_responce))
                 self.send_text_message(text_in_responce)
-                if "пришли тестовый QR".lower() in text_content.lower():
-                    self.send_own_pics()
+                # if "пришли тестовый QR".lower() in text_content.lower():
+                #    self.send_own_pics()
             elif new_msg.type == "server_message":
                 print("We have probably received an error: {}".format(msg))
                 pass
