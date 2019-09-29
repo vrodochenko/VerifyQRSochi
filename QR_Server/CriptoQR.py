@@ -18,6 +18,5 @@ class CriptoQR:
         return pubkey, privkey
 
 
-
 if __name__ == '__main__':
     print(a.spelling_out(a.cipher(b'hi', a.pubkey), a.privkey))
