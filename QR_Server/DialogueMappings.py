@@ -3,6 +3,8 @@ DialogueMappings = \
         "прибытие": "ask_tour_start",
         "отъезд": "ask_tour_stop",
         "платим": "begin_payment",
+        "купить": "begin_payment",
+        "ок": "begin_payment",
         "[" : "confuse",
         "загрузи": "load",
         "отмена": "reset_state",

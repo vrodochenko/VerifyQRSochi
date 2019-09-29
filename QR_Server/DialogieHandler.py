@@ -1,7 +1,7 @@
 from configs import *
 from DialogueResponce import DialogueResponce as DR
 from enum import Enum
-
+from DialogueMappings import DialogueMappings
 
 class DialogueStates:
     Idle = 1
@@ -15,15 +15,25 @@ class DialogueHandler:
         self.ttl = bot_ttl  # time to live
         self.state = DialogueStates.Idle
 
+    def get_responce(self, input_str):
+        if (input_str in DialogueMappings.keys()):
+            if hasattr(self, DialogueMappings[input_str]):
+                return getattr(self, DialogueMappings[input_str])()
+        else:
+            return self.confuse()
+
     def confuse(self):
         return DR.answ_unknown
 
     def reset_state(self):
         self.state = DialogueStates.Idle
-        return DR.answ_unknown
+        return DR.answ_cancel
 
     def show_help(self):
         return DR.answ_help
+
+    def show_price(self):
+        return DR.answ_price
 
     def say_hello(self):
         return DR.answ_hello

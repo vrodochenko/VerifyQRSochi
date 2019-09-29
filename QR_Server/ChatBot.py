@@ -22,7 +22,7 @@ class ChatBot:
         self.pic = None
         self.pic_thumb = None
 
-        self.DH = DialogueHandler
+        self.DH = DialogueHandler(self.request_id)
 
     def subscribe_to_messages(self):
         ''' Подписка на сообщение от пользователя
@@ -73,7 +73,8 @@ class ChatBot:
             if new_msg.type == "text":
                 text_content = msg[ApiKeys.Text]
                 print("We received a text message: {}".format(text_content))
-                text_in_responce = self.DH.start_selling()
+                text_in_responce = self.DH.get_responce(text_content)
+                print("Responding: {}".format(text_in_responce))
                 self.send_text_message(text_in_responce)
                 if "к" in text_content:
                     self.get_pics()
