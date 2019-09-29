@@ -1,86 +1,48 @@
 from configs import *
+from DialogueResponce import DialogueResponce as DR
+from enum import Enum
+
+
+class DialogueStates:
+    Idle = 1
+    Selling = 1
 
 
 class DialogueHandler:
+
     def __init__(self, ID):
         self.ID = ID
         self.ttl = bot_ttl  # time to live
+        self.state = DialogueStates.Idle
 
-    def start(self):
-        pass
+    def confuse(self):
+        return DR.answ_unknown
+
+    def reset_state(self):
+        self.state = DialogueStates.Idle
+        return DR.answ_unknown
 
     def show_help(self):
-        answer = \
-        '''
-        Я продаю билеты в заповедник в Сочи. Я учусь общаться связно, 
-        но лучше всего понимаю прямые вопросы:
-        
-        "купить"
-        "почем билеты" или "цена"
-        "отмена"
-        "что для этого нужно"
-        
-        Буду рад, если смогу помочь!
-        '''
-        return answer
-
+        return DR.answ_help
 
     def say_hello(self):
-        answer = \
-        '''
-        Доброе время суток! 
-        
-        Я могу помочь купить билеты в Сочинский заповедник 
-        без очередей и получить QR-код, 
-        который можно сохранить на устройстве или распечатать.
-        
-        Для покупки можно ввести "купить".
-        
-        Список доступных команд можно получить по слову "помощь" или "?"
-        '''
-        return answer
+        return DR.answ_hello
 
-    def start_selling():
-        answer = \
-        '''
-        Здорово! Для оформления билета мне понадобятся некоторые Ваши персональные данные.
-        
-        Они нигде не хранятся и сразу же при получении шифруются. 
-        
-        Если не согласны -- введите "отмена" или закройте меня. 
-        
-        Если всё в порядке -- введите ФИО. Следом нужны будут номер паспорта и даты
-        поездки.
-        '''
-        return answer
+    def start_selling(self):
+        self.state = DialogueStates.Selling
+        return DR.answ_start_selling
 
-    def ask_fio(self):
-        # Введите ФИО
-        pass
+    def ask_tour_start(self):
+        return DR.answ_ask_start_date
 
-    def ask_day_of_birth(self):
-        # А теперь дату рождения
-        pass
-
-    def ser_num(self):
-        # Пожалуйста, введите серию и номер пасспорта
-        pass
-
-    def start_of_tour(self):
-        # Введите дату вашего прибытия(например 26.09.2019)
-        pass
-
-    def finish_of_tour(self):
-        # Введите дату педполагаемого завершения тура(например 29.09.2019)
-        pass
+    def ask_tour_stop(self):
+        return DR.answ_ask_end_date
 
     def begin_payment(self):
-        # Отлично! Пожалуйста, перейдите по ссылке для оплаты
-        pass
+        return DR.answ_ask_for_payment
 
     def say_bye(self):
-        # Сорхание данный QR-код до конца вашего прибывание в заповеднике. Спасибо за обращение, приятного отдыха!
-        pass
+        return DR.answ_farewell
 
     def save(self):
         pass
