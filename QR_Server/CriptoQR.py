@@ -1,23 +1,19 @@
-import rsa
+from cryptography.fernet import Fernet
 
 
 class CriptoQR:
-    def __init__(self, pubkey, privkey):
-        self.pubkey = pubkey
-        self.privkey = privkey
+    def __init__(self, key):
+        self.key = key
+
     def __init__(self):
-         self.pubkey, self.privkey = self.create_keys()
-    def cipher(self, message, pubkey):
-        crypto = rsa.encrypt(message, pubkey)
+        self.key = self.create_key()
+
+    def cipher(self, message, key):
+        f = Fernet(key)
+        message = str(message).encode()
+        crypto = f.encrypt(message)
         return crypto
-    def spelling_out(self, crypto, privkey):
-        message = rsa.decrypt(crypto, privkey)
-        return message
-    def create_keys(self):
-        (pubkey, privkey) = rsa.newkeys(512)
-        return pubkey, privkey
 
-
-
-if __name__ == '__main__':
-    print(a.spelling_out(a.cipher(b'hi', a.pubkey), a.privkey))
+    def create_key(self):
+        key = Fernet.generate_key()
+        return key

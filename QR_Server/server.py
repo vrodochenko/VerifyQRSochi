@@ -2,11 +2,15 @@ from flask import Flask, request, jsonify, send_file
 from qrgen import *
 from rsh import *
 import json
+from CriptoQR import CriptoQR
 
 from qrgen import genqr
 from rsh import request_exception_handler
 
+crypto_data = CriptoQR()
+
 app = Flask(__name__)
+ID = 3435435
 
 
 @app.route("/")
@@ -18,7 +22,11 @@ def index():
 @request_exception_handler
 def parse_request():
     req_data = request.get_json()
-    genqr(json.dumps(req_data))
+    id_dict = {"ID": ID}
+    req_data.update(id_dict)
+    print(req_data)
+    req_data = crypto_data.cipher(json.dumps(req_data), crypto_data.key)
+    genqr(req_data)
     return "test"
     # TODO:
 
@@ -38,6 +46,6 @@ def generate():
     genqr("Hello, Nigga")
     return "testqr"
 
-
+app.run(host="10.178.195.95", port=5000)
 def start_server():
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="10.178.195.95", port=5000)
