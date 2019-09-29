@@ -8,3 +8,4 @@ port = 20001
 auth_token = 'b18abcd5af40ae5dec47bdff580475f2bd5f96356896cf2965fbd281ea27448b'
 
 bot_ttl = 30
+ticket_price = 150

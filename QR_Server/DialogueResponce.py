@@ -1,3 +1,4 @@
+from configs import *
 class DialogueResponce:
     answ_help = \
     '''
@@ -11,6 +12,10 @@ class DialogueResponce:
 
     Буду рад, если смогу помочь!
     '''
+    answ_price = \
+    '''
+    Цена составляет {} рублей.
+    '''.format(ticket_price)
 
     answ_unknown = \
     '''
