@@ -2,14 +2,14 @@ import json
 import socket
 import time
 
+
 import configs
 from ApiKeys import *
 from ImageFormat import ImageFormat
-from MessageHandler import MessageHandler
 from SeraphimMessage import SeraphimMessage as SM
 from SeraphimMessageGenerator import SeraphimMessageGenerator
 from configs import *
-
+from DialogieHandler import DialogueHandler
 
 class ChatBot:
     def __init__(self):
@@ -22,8 +22,7 @@ class ChatBot:
         self.pic = None
         self.pic_thumb = None
 
-        self.MH = MessageHandler()
-        self.SMG = None
+        self.DH = DialogueHandler
 
     def subscribe_to_messages(self):
         ''' Подписка на сообщение от пользователя
@@ -74,7 +73,8 @@ class ChatBot:
             if new_msg.type == "text":
                 text_content = msg[ApiKeys.Text]
                 print("We received a text message: {}".format(text_content))
-                self.send_text_message("text in responce")
+                text_in_responce = self.DH.start_selling()
+                self.send_text_message(text_in_responce)
                 if "к" in text_content:
                     self.get_pics()
                     self.send_picture(self.pic, self.pic_thumb)
