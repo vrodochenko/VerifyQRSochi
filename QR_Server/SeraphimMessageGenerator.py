@@ -1,4 +1,3 @@
-import json
 from ApiKeys import ApiKeys
 from MimeTypes import MimeTypes
 import json
@@ -8,8 +7,12 @@ from ReceiverEncodings import ReceiverEncodings
 
 class SeraphimMessageGenerator:
 
-    @staticmethod
-    def create_text_message(auth_token, text, receiver, message_number_in_queue):
+    def __init__(self, chat_bot, incoming_msg):
+        self.auth_token = chat_bot.auth_token
+        self.receiver = incoming_msg.sender
+        self.request_id = chat_bot.request_id
+
+    def create_text_message(self, text):
         '''
         Создание текстового сообщения
         :param auth_token: токен аутентификации бота
@@ -19,16 +22,20 @@ class SeraphimMessageGenerator:
         :return: json команды
         '''
 
-        return json.dumps(
-            {ApiKeys.Text: text,
-             ApiKeys.MimeType: MimeTypes.Text,
-             ApiKeys.Receiver: receiver,
-             ApiKeys.RequestID: message_number_in_queue,
-             ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
-             ApiKeys.Auth: auth_token}, separators=(',', ':'))
+        text_message_to_send = json.dumps(
+            {
+                ApiKeys.Text: text,
+                ApiKeys.MimeType: MimeTypes.Text,
+                ApiKeys.Receiver: self.receiver,
+                ApiKeys.RequestID: self.request_id,
+                ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
+                ApiKeys.Auth: self.auth_token},
+            separators=(',', ':')
+        )
 
-    @staticmethod
-    def create_image_message(auth_token, receiver, message_number_in_queue, image, image_thumbnail, image_format):
+        return text_message_to_send
+
+    def create_image_message(self, image_in_base_64, image_thumbnail, image_format):
         '''
         Создание сообщения с изображением
         :param auth_token: токен аутентификации бота
@@ -40,11 +47,14 @@ class SeraphimMessageGenerator:
         :return: json команды
         '''
         return json.dumps(
-            {ApiKeys.MimeType: MimeTypes.Image,
-             ApiKeys.Receiver: receiver,
-             ApiKeys.RequestID: message_number_in_queue,
-             ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
-             ApiKeys.Image: b64encode(image).decode(),
-             ApiKeys.ImageThumbnail: b64encode(image_thumbnail).decode(),
-             ApiKeys.ImageFormat: image_format,
-             ApiKeys.Auth: auth_token}, separators=(',', ':'))
+            {
+                ApiKeys.MimeType: MimeTypes.Image,
+                ApiKeys.Receiver: self.receiver,
+                ApiKeys.RequestID: self.request_id,
+                ApiKeys.ReceiverEncoding: ReceiverEncodings.Hash,
+                ApiKeys.Image: b64encode(image_in_base_64).decode(),
+                ApiKeys.ImageThumbnail: b64encode(image_thumbnail).decode(),
+                ApiKeys.ImageFormat: image_format,
+                ApiKeys.Auth: self.auth_token},
+            separators=(',', ':')
+        )

@@ -2,7 +2,7 @@ class ApiKeys:
     MimeType = "mimetype"  # тип сообщения
     Receiver = "receiver"  # получатель
     Text = "text"  # текст
-    RequestID = "request_id"  # идентификатор запроса
+    RequestID = "opaque"  # идентификатор запроса
     ReceiverEncoding = "receiverencoding"  # кодирование получателя сообщения
     Image = "image"  # изображение
     ImageThumbnail = "imagethumbnail"  # миниатюра  изображения

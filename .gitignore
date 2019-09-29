@@ -1,2 +1,3 @@
 /QR_Server/venv/
 *.pyc
+/QR_Server/__pycache__/

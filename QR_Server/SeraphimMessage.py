@@ -8,6 +8,7 @@ class SeraphimMessage:
         return msg[key] if msg.__contains__(key) else "Empty"
 
     def __init__(self, msg):
+        # general
         self.mime_type = self.safe_assign(msg, ApiKeys.MimeType)
         self.receiver = self.safe_assign(msg, ApiKeys.Receiver)
         self.RequestID = self.safe_assign(msg, ApiKeys.RequestID)
@@ -18,6 +19,15 @@ class SeraphimMessage:
         self.auth = self.safe_assign(msg, ApiKeys.Auth)
         self.subscribe = self.safe_assign(msg, ApiKeys.Subscribe)
 
+        # for text
+        self.text = SeraphimMessage.safe_assign(msg, ApiKeys.Text)
+
+        # for images
+        self.image = SeraphimMessage.safe_assign(msg, ApiKeys.Image)
+        self.image_thumbnail = SeraphimMessage.safe_assign(msg, ApiKeys.ImageThumbnail)
+        self.image_format = SeraphimMessage.safe_assign(msg, ApiKeys.ImageFormat)
+
+        # what's that
         self.type = self.classify(msg)
 
     @staticmethod

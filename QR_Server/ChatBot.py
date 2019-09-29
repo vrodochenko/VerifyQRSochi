@@ -1,27 +1,19 @@
-import configs
 import json
-from ApiKeys import ApiKeys
-import os
 import socket
-import json
 import time
 
-from configs import *
-
+import configs
 from ApiKeys import *
-from ApiResult import ApiResult
-
-from SeraphimMessage import SeraphimMessage as SM
-from SeraphimMessageGenerator import SeraphimMessageGenerator
 from ImageFormat import ImageFormat
 from MessageHandler import MessageHandler
+from SeraphimMessage import SeraphimMessage as SM
 from SeraphimMessageGenerator import SeraphimMessageGenerator
+from configs import *
 
 
 class ChatBot:
     def __init__(self):
         self.auth_token = configs.auth_token
-        # self.request_id = request_id
         self.request_id = 0
         self.socket_to_connect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.PIC_PATH = configs.PIC_PATH
@@ -31,7 +23,7 @@ class ChatBot:
         self.pic_thumb = None
 
         self.MH = MessageHandler()
-        self.SMG = SeraphimMessageGenerator()
+        self.SMG = None
 
     def subscribe_to_messages(self):
         ''' Подписка на сообщение от пользователя
@@ -62,39 +54,33 @@ class ChatBot:
         if not self.pic:
             print("Cannot import thumbnail")
 
+    def send_text_message(self, text):
+            echo_msg = self.SMG.create_text_message(text)
+            self.socket_to_connect.sendall(bytes(echo_msg, 'utf-8'))
+            self.request_id += 1
+
+    def send_picture(self, pic, pic_thumb):
+        echo_image = self.SMG.create_image_message(image_in_base_64=pic,
+                                                   image_thumbnail=pic_thumb,
+                                                   image_format=ImageFormat.Jpg)
+        self.socket_to_connect.sendall(bytes(echo_image, 'utf-8'))
+
     def handle_message(self, encoded_msg):
         if encoded_msg:
             msg = json.loads(encoded_msg)
             new_msg = SM(msg)
-            if new_msg.type == "text":
-                pass
-            elif new_msg.type == "server_message":
-                pass
+            self.SMG = SeraphimMessageGenerator(self, new_msg)
 
-            if msg.__contains__(ApiKeys.Sender):
-                echo_msg = self.SMG.create_text_message(auth_token=auth_token,
-                                                        text=msg[ApiKeys.Text],
-                                                        receiver=msg[ApiKeys.Sender],
-                                                        message_number_in_queue=self.request_id)
-                # msg[ApiKeys.Text]
-                #print(echo_msg)
-                self.socket_to_connect.sendall(bytes(echo_msg, 'utf-8'))
-                self.request_id += 1
-                self.get_pics()
-                echo_image = self.SMG.create_image_message(auth_token=auth_token,
-                                                           receiver=msg[ApiKeys.Sender],
-                                                           message_number_in_queue=self.request_id,
-                                                           image=self.pic,
-                                                           image_thumbnail=self.pic_thumb,
-                                                           image_format=ImageFormat.Jpg)
-                #print(echo_image)
-                self.request_id += 1
-                self.socket_to_connect.sendall(bytes(echo_image, 'utf-8'))
-            elif msg.__contains__(ApiKeys.RequestID):  # результат выполнения запроса
-                if int(msg[ApiKeys.Result]) != ApiResult.Ok:  # здесь можно обработать ошибки
-                    print("error :", msg[ApiKeys.Result])
-            if msg.__contains__(ApiKeys.Text):
-                print("Нам пришло текстовое сообщение: {}".format(msg[ApiKeys.Text]))
+            if new_msg.type == "text":
+                text_content = msg[ApiKeys.Text]
+                print("We received a text message: {}".format(text_content))
+                self.send_text_message("text in responce")
+                if "к" in text_content:
+                    self.get_pics()
+                    self.send_picture(self.pic, self.pic_thumb)
+            elif new_msg.type == "server_message":
+                print("We have probably received an error: {}".format(msg))
+                pass
 
     def start(self):
         self.connect()
