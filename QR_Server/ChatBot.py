@@ -11,6 +11,7 @@ from SeraphimMessageGenerator import SeraphimMessageGenerator
 from configs import *
 from DialogieHandler import DialogueHandler
 
+
 class ChatBot:
     def __init__(self):
         self.auth_token = configs.auth_token
@@ -76,7 +77,7 @@ class ChatBot:
                 text_in_responce = self.DH.get_responce(text_content)
                 print("Responding: {}".format(text_in_responce))
                 self.send_text_message(text_in_responce)
-                if "к" in text_content:
+                if "пришли QR".lower() in text_content.lower():
                     self.get_pics()
                     self.send_picture(self.pic, self.pic_thumb)
             elif new_msg.type == "server_message":
