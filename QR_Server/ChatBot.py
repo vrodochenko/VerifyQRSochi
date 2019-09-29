@@ -1,7 +1,7 @@
 import json
 import socket
 import time
-
+import qrgen
 
 import configs
 from ApiKeys import *
@@ -9,7 +9,7 @@ from ImageFormat import ImageFormat
 from SeraphimMessage import SeraphimMessage as SM
 from SeraphimMessageGenerator import SeraphimMessageGenerator
 from configs import *
-from DialogieHandler import DialogueHandler
+from DialogueHandler import DialogueHandler, DialogueStates
 
 
 class ChatBot:
@@ -19,10 +19,6 @@ class ChatBot:
         self.socket_to_connect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.PIC_PATH = configs.PIC_PATH
         self.PIC_THUMB_PATH = configs.PIC_THUMB_PATH
-
-        self.pic = None
-        self.pic_thumb = None
-
         self.DH = DialogueHandler(self.request_id)
 
     def subscribe_to_messages(self):
@@ -65,6 +61,19 @@ class ChatBot:
                                                    image_format=ImageFormat.Jpg)
         self.socket_to_connect.sendall(bytes(echo_image, 'utf-8'))
 
+    def react_on_dialogue_state(self):
+        if self.DH.State == DialogueStates.Finish:
+            person_data = self.DH.Pers.serialize()
+            person_data_iphone = self.DH.Pers.serialize_to_iphone()
+            print("We have filled a person {}".format(person_data))
+            print("Creating qr code")
+            qrgen.generate_qr_code(person_data_iphone)
+            self.send_own_pics()
+
+    def send_own_pics(self):
+        self.get_pics()
+        self.send_picture(self.pic, self.pic_thumb)
+
     def handle_message(self, encoded_msg):
         if encoded_msg:
             msg = json.loads(encoded_msg)
@@ -75,11 +84,11 @@ class ChatBot:
                 text_content = msg[ApiKeys.Text]
                 print("We received a text message: {}".format(text_content))
                 text_in_responce = self.DH.get_responce(text_content)
+                self.react_on_dialogue_state()
                 print("Responding: {}".format(text_in_responce))
                 self.send_text_message(text_in_responce)
-                if "пришли QR".lower() in text_content.lower():
-                    self.get_pics()
-                    self.send_picture(self.pic, self.pic_thumb)
+                if "пришли тестовый QR".lower() in text_content.lower():
+                    self.send_own_pics()
             elif new_msg.type == "server_message":
                 print("We have probably received an error: {}".format(msg))
                 pass

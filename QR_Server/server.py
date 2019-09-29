@@ -3,7 +3,7 @@ from qrgen import *
 from rsh import *
 import json
 
-from qrgen import genqr
+from qrgen import generate_qr_code
 from rsh import request_exception_handler
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def index():
 @request_exception_handler
 def parse_request():
     req_data = request.get_json()
-    genqr(json.dumps(req_data))
+    generate_qr_code(json.dumps(req_data))
     return "test"
     # TODO:
 
@@ -35,7 +35,7 @@ def get_output_file():
 @app.route("/generate")
 @request_exception_handler
 def generate():
-    genqr("Hello, Nigga")
+    generate_qr_code("Hello, Nigga")
     return "testqr"
 
 
